@@ -17,6 +17,7 @@ const props = defineProps<{
     muted?: booleanish;
     utc?: booleanish;
     'class'?: ClassOptions;
+    parseFormat?: string;
 }>();
 
 const classes = computed(() => serClasses(props.class, {
@@ -27,7 +28,11 @@ const datetime = computed(() => {
     if (!props.date) return undefined;
     if (props.date instanceof Date) return DateTime.fromJSDate(props.date);
     let value = props.date.endsWith('Z') || !isTrue(props.utc) ? props.date : `${props.date}Z`;
-    return DateTime.fromJSDate(new Date(value));
+    if (props.parseFormat) {
+        return DateTime.fromFormat(value, props.parseFormat);
+    }
+
+    return DateTime.fromISO(value);
 })
 
 const formatted = computed(() => {

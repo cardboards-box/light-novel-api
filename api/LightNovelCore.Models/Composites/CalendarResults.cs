@@ -13,7 +13,7 @@ public record class CalendarResults<T>(
 	[property: JsonPropertyName("start")] DateOnly Start,
 	[property: JsonPropertyName("end")] DateOnly End,
 	[property: JsonPropertyName("chunk")] int Chunk,
-	[property: JsonPropertyName("publications")] Dictionary<Guid, T> Entities,
+	[property: JsonPropertyName("entities")] Dictionary<Guid, T> Entities,
 	[property: JsonPropertyName("entries")] CalendarChunk[] Entries);
 
 /// <summary>

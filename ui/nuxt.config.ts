@@ -36,7 +36,8 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            apiUrl: process.env.API_URL || 'http://localhost:5133',
+            apiUrl: 'http://localhost:5133',
+            prod: process.env.NODE_ENV === 'production'
         }
     },
 

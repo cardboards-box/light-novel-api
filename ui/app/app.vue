@@ -4,6 +4,9 @@
     </NuxtLayout>
 </template>
 
+<script setup lang="ts">
+useHead({ title: 'Light Novel Release Schedules' })
+</script>
 
 <style lang="scss">
 .page-enter-active,

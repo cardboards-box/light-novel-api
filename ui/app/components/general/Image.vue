@@ -65,7 +65,6 @@ const image = ref<HTMLImageElement | undefined>();
 const observer = ref<IntersectionObserver>();
 
 const actSrc = computed(() => props.src || props.default || DEFAULT_IMAGE);
-const actSize = ref<{ width: CssUnit; height: CssUnit }>({ width: undefined, height: undefined });
 const actImage = computed(() => <HTMLImageElement>(<any>image.value)?.$el);
 const isBackground = computed(() => props.type !== 'img');
 const hasLink = computed(() => !!props.link);
@@ -73,15 +72,16 @@ const externalLink = computed(() => isExternal(props.link));
 const classes = computed(() => serClasses(props.class, {
     'image': isBackground.value,
 }));
-const styles = computed(() => serStyles(props.style, isBackground.value ? {
+const actSize = ref<{ width: CssUnit; height: CssUnit }>({ width: undefined, height: undefined });
+const styles = computed(() => serStyles(props.style, {
     'width': actSize.value.width,
     'min-width': actSize.value.width,
     'max-width': actSize.value.width,
     'height': actSize.value.height,
     'max-height': actSize.value.height,
     'min-height': actSize.value.height,
-    'background-image': `url(${outputResult.value})`
-} : undefined));
+    'background-image': isBackground.value ? `url(${outputResult.value})` : undefined
+}));
 const outputResult = computed(() => {
     if (result.value) return result.value;
     if (state.value === 'loading') return props.default;
@@ -105,7 +105,7 @@ const resolveCss = (value: CssUnit, image: HTMLElement, def?: number) => {
     return cssUnit(value, image);
 }
 
-const computeSize = () => {
+function computeSize() {
     if (props.size) {
         if (typeof props.size === 'string') {
             return { width: props.size, height: props.size }
@@ -134,7 +134,6 @@ const computeSize = () => {
     if (!clampW && !clampH) {
         return { width: undefined, height: undefined };
     }
-
 
     const { width, height } = size.value;
     const { width: w, height: h } = scale(width, height, clampW!, clampH!);
@@ -181,7 +180,10 @@ const onLoad = () => {
     emit('loaded');
     onResize(undefined);
 };
-const onError = () => emit('errored');
+const onError = () => {
+    emit('errored');
+    onResize(undefined);
+};
 
 const {
     state,
@@ -198,7 +200,7 @@ const {
 onMounted(() => nextTick(() => {
     refresh();
     watch(() => actImage.value, () => doObserver(), { deep: true });
-    watch(() => props, () => onResize(undefined), { deep: true });
+    watch(() => props, () => onResize(undefined), { deep: true, immediate: true });
     doObserver();
     window.addEventListener('resize', onResize);
 }));

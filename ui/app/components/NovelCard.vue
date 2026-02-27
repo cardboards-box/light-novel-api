@@ -1,20 +1,35 @@
 <template>
     <div class="novel-card margin-top margin-left margin-right flex">
-        <Image
-            v-if="novel.cover"
-            :src="novel.cover"
-            clamp-height="150px"
-            class="rounded margin-right"
-        />
-        <div class="flex row fill">
-            <div class="flex">
-                <h3 class="fill center-vert">{{ novel.title }} <span v-if="novel.volume">Vol. {{ novel.volume }}</span></h3>
-                <div class="center-vert flex">
-                    <Icon v-if="novel.isPhysical">book_2</Icon>
-                    <Icon v-if="novel.isDigital">tablet_android</Icon>
-                    <Icon v-if="novel.isAudioBook">headphones</Icon>
+        <div
+            class="cover-image margin-right center-vert flex"
+            :style="{
+                maxWidth: '100px',
+                minWidth: '100px',
+                maxHeight: '150px',
+                minHeight: '150px',
+                overflow: 'hidden'
+            }"
+        >
+            <Image
+                :src="coverUrl"
+                clamp-height="150px"
+                clamp-width="100px"
+                class="rounded center"
+            />
+        </div>
+        <div class="flex row fill novel-content">
+            <div class="flex title-container">
+                <h3
+                    class="title fill center-vert"
+                    style="width: calc(100% - 75px);"
+                >
+                    {{ volume.title }} <span v-if="volume.volume">Vol. {{ volume.volume }}</span>
+                </h3>
+                <div class="center-vert flex" style="width: 75px;">
+                    <Icon v-if="format" :title="format.name">{{ format.icon }}</Icon>
                     <IconBtn
-                        :link="novel.url"
+                        v-if="publication.url"
+                        :link="publication.url"
                         icon="open_in_new"
                         title="Open Novel Link"
                         inline
@@ -22,8 +37,8 @@
                         external
                     />
                     <IconBtn
-                        v-if="novel.amazonLink"
-                        :link="novel.amazonLink"
+                        v-if="amazon"
+                        :link="amazon"
                         icon="shopping_cart_checkout"
                         title="Buy on Amazon"
                         inline
@@ -32,46 +47,49 @@
                     />
                 </div>
             </div>
-            <p><b>Series:</b>&nbsp;{{ novel.series }}</p>
-            <p v-if="novel.volume"><b>Volume #:</b>&nbsp;{{ novel.volume }}</p>
-            <p><b>Publisher:</b>&nbsp;{{ novel.publisher }}</p>
-            <p v-if="novel.isbn"><b>ISBN:</b>&nbsp;{{ novel.isbn }}</p>
-            <p v-if="formats.length > 0"><b>Format{{ formats.length > 1 ? 's' : '' }}:</b>&nbsp;{{ formats.map(f => f.name).join(', ') }}</p>
+            <p><b>Series:</b>&nbsp;{{ series.title }}</p>
+            <p v-if="volume && volume.volume"><b>Volume #:</b>&nbsp;{{ volume.volume }}</p>
+            <p><b>Publisher:</b>&nbsp;{{ publisher.name }}</p>
+            <p v-if="publication.isbn"><b>ISBN:</b>&nbsp;{{ publication.isbn }}</p>
+            <p v-if="format"><b>Format:</b>&nbsp;{{ format.name }}</p>
             <p>
                 <b>Release Date:</b>&nbsp;
-                <Date :date="novel.date" format="D" />
+                <Date :date="publication.releaseDate" format="D" />
             </p>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import type { Novel } from '~/models';
+import { LncFormat } from '~/models';
+import type { LncFullPublication } from '~/models';
+const { getRelated, amazonLink, promise } = useApi();
 
 const props = defineProps<{
-    novel: Novel;
+    novel: LncFullPublication;
 }>();
 
-const formats = computed(() => {
-    const formats = [];
+const format = computed(() => {
+    switch (props.novel.entity.format) {
+        case LncFormat.Physical: return { name: 'Physical', icon: 'book_2' };
+        case LncFormat.Digital: return { name: 'Digital', icon: 'tablet_android' };
+        case LncFormat.Audio: return { name: 'Audio Book', icon: 'headphones' };
+    }
+});
 
-    if (props.novel.isPhysical) formats.push({
-        name: 'Physical',
-        icon: 'book_2'
-    });
-
-    if (props.novel.isDigital) formats.push({
-        name: 'Digital',
-        icon: 'tablet_android'
-    });
-
-    if (props.novel.isAudioBook) formats.push({
-        name: 'Audio Book',
-        icon: 'headphones'
-    });
-
-    return formats;
-})
+const cover = computed(() => getRelated(props.novel, 'LncCover'));
+const coverUrl = computed(() => {
+    if (cover.value && cover.value.coverUrl)
+        return promise.image.url(cover.value.id);
+    if (publisher.value && publisher.value.iconUrl)
+        return publisher.value.iconUrl;
+    return '/error.gif';
+});
+const volume = computed(() => getRelated(props.novel, 'LncVolume')!);
+const publisher = computed(() => getRelated(props.novel, 'LncPublisher')!);
+const series = computed(() => getRelated(props.novel, 'LncSeries')!);
+const publication = computed(() => props.novel.entity);
+const amazon = computed(() => amazonLink(props.novel));
 
 </script>
 
@@ -80,9 +98,23 @@ const formats = computed(() => {
     padding: var(--margin);
     border: 1px solid var(--color-primary);
     border-radius: var(--brd-radius);
+    overflow: hidden;
 
     &:last-child {
         margin-bottom: var(--margin);
+    }
+
+    .novel-content {
+        overflow: hidden;
+
+        .title-container {
+            min-width: 0;
+            .title {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
     }
 }
 

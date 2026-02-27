@@ -1,2 +1,2 @@
-export * from './novels';
+export * from './api';
 export * from './polyfill';
