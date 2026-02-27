@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../.dockerignore" />
+    <File Path="../.github/workflows/api.yaml" />
+    <File Path="../.github/workflows/cli.yaml" />
+    <File Path="../.github/workflows/ui.yaml" />
+    <File Path="../.gitignore" />
+    <File Path="../api.Dockerfile" />
+    <File Path="../cli.Dockerfile" />
+    <File Path="../icon.jpg" />
+    <File Path="../init-env.sh" />
+    <File Path="../LICENSE" />
+    <File Path="../README.md" />
+    <File Path="../ui.Dockerfile" />
+  </Folder>
+  <Project Path="LightNovelCore.All/LightNovelCore.All.csproj" Id="33a9d475-5f05-4305-a339-d30243f0caa2" />
+  <Project Path="LightNovelCore.Api/LightNovelCore.Api.csproj" Id="8b987c23-b0b7-4b02-9166-b29e6423170c" />
+  <Project Path="LightNovelCore.Cli/LightNovelCore.Cli.csproj" />
+  <Project Path="LightNovelCore.Core/LightNovelCore.Core.csproj" Id="7aa785c9-0c47-4753-a616-559c1806fe10" />
+  <Project Path="LightNovelCore.Database.Generation/LightNovelCore.Database.Generation.csproj" Id="732ac8c6-56e1-4822-9d5d-c7c68da24934" />
+  <Project Path="LightNovelCore.Database/LightNovelCore.Database.csproj" Id="bb6d686c-1f6b-4076-a6e4-f849cc629c90" />
+  <Project Path="LightNovelCore.DataSet/LightNovelCore.DataSet.csproj" />
+  <Project Path="LightNovelCore.Models/LightNovelCore.Models.csproj" Id="52f248d3-d475-450f-952a-90971a8c12fe" />
+  <Project Path="LightNovelCore.Services/LightNovelCore.Services.csproj" Id="9b534cb3-ba72-4d6e-95e8-97f076aad915" />
+</Solution>

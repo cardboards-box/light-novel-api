@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<Authors>Cardboard</Authors>
+		<Company>Cardboard's Box</Company>
+		<Description>A LightNovelCore Library</Description>
+		<PackageProjectUrl>https://github.com/cardboards-box/light-novel-api</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/cardboards-box/light-novel-api</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageIcon>icon.jpg</PackageIcon>
+		<Version>1.0.0</Version>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<UserSecretsId>4e419f6e-735c-4092-b6f2-c9cf5a4b3bce</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\icon.jpg" Link="icon.jpg">
+			<PackagePath>\</PackagePath>
+			<Pack>True</Pack>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md" Link="README.md">
+			<PackagePath>\</PackagePath>
+			<Pack>True</Pack>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="../global.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\LightNovelCore.All\LightNovelCore.All.csproj" />
+		<ProjectReference Include="..\LightNovelCore.Database.Generation\LightNovelCore.Database.Generation.csproj" />
+	</ItemGroup>
+
+</Project>

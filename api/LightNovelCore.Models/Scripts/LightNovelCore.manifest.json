@@ -1,0 +1,12 @@
+{
+	"paths": [
+		"extensions.sql",
+		"Functions/text_array_join.sql",
+		"Tables/lnc_novel_staging.sql",
+		"Tables/lnc_covers.sql",
+		"Tables/lnc_publishers.sql",
+		"Tables/lnc_series.sql",
+		"Tables/lnc_volumes.sql",
+		"Tables/lnc_publications.sql"
+	]
+}
