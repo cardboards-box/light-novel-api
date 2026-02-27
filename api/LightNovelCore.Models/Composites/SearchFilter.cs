@@ -202,6 +202,15 @@ JOIN lnc_volumes v ON p.volume_id = v.id
 WHERE 
 	v.deleted_at IS NULL AND
 	p.deleted_at IS NULL;
+
+SELECT DISTINCT c.*
+FROM lnc_search_results_{suffix} r
+JOIN lnc_publications p ON r.id = p.id
+JOIN lnc_covers c ON p.isbn = c.isbn
+WHERE 
+	c.deleted_at IS NULL AND
+	p.deleted_at IS NULL AND
+	c.cover_url IS NOT NULL;
 			
 SELECT DISTINCT p.*, r.order_column
 FROM lnc_search_results_{suffix} r

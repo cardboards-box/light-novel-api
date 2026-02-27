@@ -53,6 +53,7 @@ public interface ILncPublicationDbService
     /// Searches for records with the given filters
     /// </summary>
     /// <param name="filter">The filter to use for searching</param>
+    /// <param name="skipLimit">Whether or not to skip the limit on the number of results</param>
     /// <returns>The paginated result of the search</returns>
     Task<PaginatedResult<LncEntity<LncPublication>>> Search(SearchFilter filter, bool skipLimit);
 }
@@ -105,6 +106,7 @@ WHERE
         var publishers = (await rdr.ReadAsync<LncPublisher>()).ToDictionary(t => t.Id);
         var series = (await rdr.ReadAsync<LncSeries>()).ToDictionary(t => t.Id);
         var volumes = (await rdr.ReadAsync<LncVolume>()).ToDictionary(t => t.Id);
+        var covers = (await rdr.ReadAsync<LncCover>()).ToDictionary(t => t.Isbn);
 
         var publications = await rdr.ReadAsync<LncPublication>();
         var records = new List<LncEntity<LncPublication>>();
@@ -114,7 +116,9 @@ WHERE
             var related = new List<LncRelationship>();
             if (publishers.TryGetValue(publication.PublisherId, out var publisher))
                 LncRelationship.Apply(related, publisher);
-            if (volumes.TryGetValue(publication.VolumeId, out var volume))
+            if (covers.TryGetValue(publication.Isbn ?? string.Empty, out var cover))
+                LncRelationship.Apply(related, cover);
+			if (volumes.TryGetValue(publication.VolumeId, out var volume))
             {
                 LncRelationship.Apply(related, volume);
                 if (series.TryGetValue(volume.SeriesId, out var seri))

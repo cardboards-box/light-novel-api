@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace LightNovelCore.DataSet;
+﻿namespace LightNovelCore.DataSet;
 
 /// <summary>
 /// Dependency injection extensions
@@ -15,6 +13,7 @@ public static class DiExtensions
 	public static IServiceCollection AddLnCoreDataset(this IServiceCollection services)
 	{
 		return services
-			.AddTransient<INovelApiService, NovelApiService>();
+			.AddTransient<INovelApiService, NovelApiService>()
+			.AddTransient<ICoverApiService, CoverApiService>();
 	}
 }

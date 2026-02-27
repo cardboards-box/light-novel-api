@@ -10,12 +10,11 @@ create_dirs() {
   mkdir -p "./postgres"
   mkdir -p "./file-cache"
   mkdir -p "./logs"
-  mkdir -p "./bookcovers"
 }
 
 create_env() {
   filename="./.env"
-  if [ -e "$filename" ]; then
+  if [ -e "$filename" ] && [ "$force" -ne 1 ]; then
     echo "File $filename already exists. Skipping creation."
     return
   fi
@@ -53,7 +52,7 @@ EOF
 
 create_compose() {
   filename="./docker-compose.yml"
-  if [ -e "$filename" ]; then
+  if [ -e "$filename" ] && [ "$force" -ne 1 ]; then
     echo "File $filename already exists. Skipping creation."
     return
   fi
@@ -106,8 +105,8 @@ services:
     restart: unless-stopped
 
   app-bookcover:
-    image: 
-      context: ./bookcovers
+    build: 
+      context: ./bookcover-api
       target: final
     ports:
       - ${PORT_BOOKCOVER}:8000
@@ -120,7 +119,7 @@ services:
     restart: unless-stopped
   
   app-api:
-    image: ghcr.io/cardboards-box/light-novel-core/api:latest
+    image: ghcr.io/cardboards-box/light-novel-api/api:latest
     restart: unless-stopped
     ports:
       - ${PORT_API}:8080
@@ -140,7 +139,7 @@ services:
       - app-bookcover
   
   app-ui:
-    image: ghcr.io/cardboards-box/light-novel-core/ui:latest
+    image: ghcr.io/cardboards-box/light-novel-api/ui:latest
     restart: unless-stopped
     ports:
       - ${PORT_UI}:3000
@@ -155,9 +154,14 @@ EOF
 }
 
 setup_bookcover_api() {
-    cd "./bookcovers"
-    git clone https://github.com/w3slley/bookcover-api
-    cd ..
+    if [ -d "./bookcover-api/.git" ]; then
+        echo "bookcover-api already exists; pulling latest..."
+        (cd ./bookcover-api && git pull)
+    elif [ -d "./bookcover-api" ]; then
+        echo "bookcover-api exists but is not a git repo; skipping clone."
+    else
+        git clone https://github.com/w3slley/bookcover-api ./bookcover-api
+    fi
 }
 
 mkdir -p "./$root_dir"
@@ -170,8 +174,8 @@ setup_bookcover_api
 
 chmod 777 -R "../$root_dir"
 
-docker pull ghcr.io/cardboards-box/light-novel-core/api:latest
-docker pull ghcr.io/cardboards-box/light-novel-core/ui:latest
+docker pull ghcr.io/cardboards-box/light-novel-api/api:latest
+docker pull ghcr.io/cardboards-box/light-novel-api/ui:latest
 docker compose up -d
 
 cd ..

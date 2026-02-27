@@ -14,7 +14,8 @@ public static class ScheduleExtensions
 	{
 		return services
 			.AddScheduler()
-			.AddTransient<RefreshData>();
+			.AddTransient<RefreshData>()
+			.AddTransient<CacheCovers>();
 	}
 
 	/// <summary>
@@ -29,6 +30,11 @@ public static class ScheduleExtensions
 			schedule.Schedule<RefreshData>()
 				.EveryThirtyMinutes()
 				.PreventOverlapping(nameof(RefreshData));
+
+			schedule.OnWorker(nameof(CacheCovers))
+				.Schedule<CacheCovers>()
+				.EveryFifteenMinutes()
+				.PreventOverlapping(nameof(CacheCovers));
 		});
 		return app;
 	}

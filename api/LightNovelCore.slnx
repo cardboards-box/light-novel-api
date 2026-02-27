@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path="../.dockerignore" />
+    <File Path="../.editorconfig" />
     <File Path="../.github/workflows/api.yaml" />
     <File Path="../.github/workflows/cli.yaml" />
     <File Path="../.github/workflows/ui.yaml" />

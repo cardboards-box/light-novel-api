@@ -1,4 +1,6 @@
-﻿namespace LightNovelCore.Services;
+﻿using System.Threading.RateLimiting;
+
+namespace LightNovelCore.Services;
 
 /// <summary>
 /// Dependency injection extensions
@@ -14,6 +16,25 @@ public static class DiExtensions
 	{
 		return services
 			.AddTransient<IDataRefreshService, DataRefreshService>()
-			.AddTransient<ICalendarService, CalendarService>();
+			.AddTransient<ICalendarService, CalendarService>()
+			.AddTransient<IHttpService, HttpService>()
+			.AddTransient<ICoverCacheService, CoverCacheService>()
+			
+			.AddKeyedSingleton<RateLimiter>(CoverCacheService.LIMITER_KEY, (s, _) => 
+			{
+				var config = s.GetRequiredService<IConfiguration>();
+				var tokens = int.TryParse(config["Imaging:TokensPerPeriod"], out var tkn) ? tkn : 30;
+				var period = double.TryParse(config["Imaging:PeriodSeconds"], out var sec) ? sec : 5;
+
+				return new TokenBucketRateLimiter(new()
+				{
+					TokenLimit = tokens,
+					TokensPerPeriod = tokens,
+					QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+					QueueLimit = int.MaxValue,
+					ReplenishmentPeriod = TimeSpan.FromSeconds(period),
+					AutoReplenishment = true
+				});
+			});
 	}
 }
